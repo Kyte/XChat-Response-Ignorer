@@ -13,7 +13,7 @@
 
 #define PNAME "ResponseIgnorer"
 #define PDESC "Ignores messages meant for people who've been /ignored."
-#define PVERSION "1.0.4"
+#define PVERSION "1.0.6"
 /*	0.1.0 <-- Got it to load on XChat		*
  *	0.2.0 <-- Figured out a command hook	*
  *	0.3.0 <-- Grabbed /ignore data			*
@@ -39,10 +39,11 @@ namespace my {
 string reduceToNick(const string& mask) {
 	string nick(mask);
 
-	string::iterator it;
-	for (it = nick.begin(); it != nick.end() && my::isnotalnum(*it); it++);
-	nick.erase(std::remove_if(nick.begin(), it, my::isnotalnum), it);
-	for (it; it != nick.end() && my::isalnum(*it); it++);
+	string::iterator it = nick.begin();
+	for (it; it != nick.end() && my::isnotalnum(*it); ++it);
+	it = nick.erase(std::remove_if(nick.begin(), it, my::isnotalnum), it);
+
+	for (it; it != nick.end() && my::isalnum(*it); ++it);
 	nick.erase(it, nick.end());
 
 	return nick;
