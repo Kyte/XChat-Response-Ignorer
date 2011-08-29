@@ -13,7 +13,7 @@
 
 #define PNAME "ResponseIgnorer"
 #define PDESC "Ignores messages meant for people who've been /ignored."
-#define PVERSION "1.0.3"
+#define PVERSION "1.0.4"
 /*	0.1.0 <-- Got it to load on XChat		*
  *	0.2.0 <-- Figured out a command hook	*
  *	0.3.0 <-- Grabbed /ignore data			*
@@ -30,15 +30,19 @@ static xchat_plugin* ph;
 map<string, int> ignoreMap;
 map<string, ignoreFlags> flagMap;
 
-int isnotalnum(int c) { return !std::isalnum(c); }
+namespace my {
+	int isalnum(char c) { return std::isalnum((int)(unsigned char)c); }
+	int isnotalnum(char c) { return !std::isalnum((int)(unsigned char)c); }
+	int toupper(char c) { return std::toupper((int)(unsigned char)c); }
+}
 
 string reduceToNick(const string& mask) {
 	string nick(mask);
 
 	string::iterator it;
-	for (it = nick.begin(); it != nick.end() && isnotalnum(*it); it++);
-	nick.erase(std::remove_if(nick.begin(), it, isnotalnum), it);
-	for (it; it != nick.end() && isalnum(*it); it++);
+	for (it = nick.begin(); it != nick.end() && my::isnotalnum(*it); it++);
+	nick.erase(std::remove_if(nick.begin(), it, my::isnotalnum), it);
+	for (it; it != nick.end() && my::isalnum(*it); it++);
 	nick.erase(it, nick.end());
 
 	return nick;
@@ -55,7 +59,7 @@ static int ignore_cb(char* words[], char* words_eol[], void*) {
 
 	for (size_t i = 3; words[i][0] != '\0'; i++) {
 		string flag(words[i]);
-		std::transform(flag.begin(), flag.end(), flag.begin(), ::toupper);
+		std::transform(flag.begin(), flag.end(), flag.begin(), my::toupper);
 
 		found = flagMap.find(flag);
 		if (found != flagMap.end()) flags |= found->second;
