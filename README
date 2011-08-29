@@ -1,0 +1,13 @@
+So here's an XChat plugin. Pretty simple, just load and use.
+The purpose is to ignore any line that starts referring to an
+ignored nickname.
+Say, if you've got Kyte ignored, "Kyte: blah blah" will get
+ignored as well, doesn't matter the origin.
+
+It's only got /ignorelist, mostly for testing, to see what
+nicknames're being tracked by the plugin.
+Also catches /ignore and /unignore to update the list.
+
+No comments, because this was a favor and I was tired. It
+should be pretty self-explanatory, so long as you understand
+iterators.
