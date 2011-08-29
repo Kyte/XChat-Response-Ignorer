@@ -1,7 +1,7 @@
-/*		*
+/*														*
  *	Blah blah Copyright Mauricio Salinas Abarca 2011	*
  *	Kindari you better be grateful						*
- *							*/
+ *														*/
 
 #include "precompiled.h"
 #include <algorithm>
@@ -13,7 +13,7 @@
 
 #define PNAME "ResponseIgnorer"
 #define PDESC "Ignores messages meant for people who've been /ignored."
-#define PVERSION "1.0.2"
+#define PVERSION "1.0.3"
 /*	0.1.0 <-- Got it to load on XChat		*
  *	0.2.0 <-- Figured out a command hook	*
  *	0.3.0 <-- Grabbed /ignore data			*
@@ -66,7 +66,9 @@ static int ignore_cb(char* words[], char* words_eol[], void*) {
 }
 
 static int unignore_cb(char* words[], char**, void*) {
-	ignoreMap.erase(string(words[2]));
+	string mask(words[2]);
+	map<string, int>::iterator found = ignoreMap.find(reduceToNick(mask));
+	if (found != ignoreMap.end()) ignoreMap.erase(found);
 
 	return XCHAT_EAT_NONE;
 }
@@ -118,13 +120,11 @@ int xchat_plugin_init(xchat_plugin* plugin_handle,
 	fillFlagMap();
 
 	xchat_list* list = xchat_list_get(ph, "ignore");
-
 	if (list) {
 		while (xchat_list_next(ph, list)) {
 			addToMap(string(xchat_list_str(ph, list, "mask")), xchat_list_int(ph, list, "flags"));
 		}
 	}
-
 	xchat_list_free(ph, list);
 
 	xchat_hook_server(ph, "PRIVMSG", XCHAT_PRI_NORM, server_cb, NULL);
